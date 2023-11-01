@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block base %}
+<form method='post' action='{% url "posts:create" %}'>
+        {% csrf_token %}
+        <input name='text' id='text' placeholder='text'>
+        <input type='submit' id="submit" text="Post">
+</form>
+{% endblock %}
