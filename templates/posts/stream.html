@@ -1,0 +1,26 @@
+{% block script %}
+
+    <script>
+        // Setup EventSource
+        const source = new EventSource('{% url "stream-messages" %}');
+
+        source.addEventListener("message_created", function(evt) {
+            // Parse the payload
+            let payload = JSON.parse(evt.data);
+
+            // Get and clone our template
+            let template = document.getElementById('message');
+            let clone = template.content.cloneNode(true);
+
+            // Update our cloned template
+            clone.querySelector('.user').innerText = payload.creator__email;
+            clone.querySelector('.message').innerText = payload.text;
+
+            // Append the cloned template to our list of messages
+            document.getElementById('messages').prepend(clone);
+        });
+
+
+    </script>
+
+{% endblock %}

@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
-from configurations.values import PositiveIntegerValue, Value
+from configurations.values import BooleanValue, PositiveIntegerValue, Value
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,10 +34,7 @@ AUTH_USER_MODEL = "accounts.User"  # User substitution
 
 # Application definition
 
-FIRST_PARTY_APPS = [
-	"accounts",
-	"posts"
-]
+FIRST_PARTY_APPS = ["accounts", "posts"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -52,13 +50,13 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    #"django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "pravaham.urls"
+ROOT_URLCONF = "pravaham.urls.sync_urls"
 
 TEMPLATES = [
     {
@@ -144,10 +142,45 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    "static",
 ]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = "staticfiles"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+REDIS_PASSWORD = Value(environ_prefix=None, environ_name="REDIS_PASSWORD", default=None)
+REDIS_DSN = Value(
+    environ_prefix=None, environ_name="REDIS_DSN", default="redis://redis:6379/1"
+)
+
+if REDIS_DSN:
+    if REDIS_PASSWORD:
+        scheme, host, path = urlsplit(REDIS_DSN)[:3]
+        REDIS_DSN = urlunsplit([scheme, f":{REDIS_PASSWORD}@{host}", path, "", ""])
+
+NOTIFICATION_POST = "notification.post"
+LOG_LEVEL = Value(environ_prefix=None, environ_name="LOG_LEVEL", default="DEBUG" if DEBUG else "INFO")
+LOG_JSON = BooleanValue(environ_prefix=None, environ_name="LOG_JSON", default=True)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "root": {
+        "level": LOG_LEVEL,
+        "handlers": ["console"],
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "text",
+            "stream": "ext://sys.stdout",
+        }
+    },
+    "formatters": {
+        "text": {
+            "format": "%(asctime)s %(levelname)s %(thread)d %(process)d %(module)s %(name)s %(message)s",
+        },
+    },
+}

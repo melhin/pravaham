@@ -121,3 +121,6 @@ new_data.pkl
 storage/*
 !storage/this_is_a_place_to_store_custom_sqlite3_data.txt
 *.supa_env
+.ruff_cache
+
+staticfiles

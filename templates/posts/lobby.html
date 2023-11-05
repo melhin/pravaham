@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block base %}
+    <h2>Lobby</h2>
+
+    <div id="messages">
+    </div>
+    {% for message in messages %}
+    <div style="border: 1px solid black; margin: 5px; padding: 5px;">
+        <span class="createdAt">
+            {{ message.created_at }}
+        </span>
+        <strong class="user">
+           {{ message.creator__email }}
+        </strong>:
+        <span class="message">
+            {{ message.text }}
+        </span>
+    </div>
+    {% endfor %}
+
+
+    <template id="message">
+        <div style="border: 1px solid black; margin: 5px; padding: 5px;">
+            <strong class="createdAt"></strong> :
+            <strong class="user"></strong> :
+            <span class="message"></span>
+        </div>
+    </template>
+
+    <div hx-ext="sse" sse-connect="http://localhost:6767/realtime/posts/">
+        <div hx-get="/posts/new/"
+                hx-trigger="sse:new_notification"
+                hx-swap="innerHTML"
+                hx-target="#messages">
+        </div>
+    </div>
+
+{% endblock %}
+{% block script %}
+<script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
+<script>
+    document.body.addEventListener('sse:new_notification', function (evt) {
+
+        //* If a JSON string was sent, leave it as it is 
+        //evt.detail.elt.setAttribute("hx-vals", evt.detail.data);
+
+        //* if not
+        var msg = {};
+        console.log(evt.detail.data);   
+        //evt.detail.elt.setAttribute("hx-vals", JSON.stringify(msg));
+    });
+document.addEventListener('htmx:configRequest', (evt) => {
+    evt.detail.headers = [];
+});
+</script>
+
+{% endblock %}
