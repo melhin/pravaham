@@ -1,6 +1,7 @@
 
 #@login_required
 import asyncio
+import json
 from typing import AsyncGenerator
 
 from django.conf import settings
@@ -18,10 +19,14 @@ async def stream_posts(request: HttpRequest, *args, **kwargs):
             async with get_async_client().pubsub() as pubsub:
                 await pubsub.subscribe(settings.NOTIFICATION_POST)
                 while True:
-                    msg = await pubsub.get_message(ignore_subscribe_messages=True, timeout=None)
-                    print(f"got message {msg}")
+                    msg = await pubsub.get_message(ignore_subscribe_messages=True, timeout=10)
                     if msg:
-                        yield f"{msg['data']}\n\n".encode("utf-8")
+                        data = json.loads(msg['data'])
+                        print(data)
+                        event = f"data: {data['created_at']}\n\n".encode("utf-8")
+                        print(event)
+                        yield event
+
         except asyncio.CancelledError:
             # Do any cleanup when the client disconnects
             # Note: this will only be called starting from Django 5.0; until then, there is no cleanup,

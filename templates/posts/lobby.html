@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 
 {% block base %}
+    <h4 style="display:none" id="newMessage"> New Messages </h4>
+     <div id="notifications">
+    </div>
+    
     <h2>Lobby</h2>
-
+    
     <div id="messages">
     </div>
     {% for message in messages %}
@@ -18,8 +22,8 @@
         </span>
     </div>
     {% endfor %}
-
-
+    
+    
     <template id="message">
         <div style="border: 1px solid black; margin: 5px; padding: 5px;">
             <strong class="createdAt"></strong> :
@@ -28,31 +32,31 @@
         </div>
     </template>
 
-    <div hx-ext="sse" sse-connect="http://localhost:6767/realtime/posts/">
-        <div hx-get="/posts/new/"
-                hx-trigger="sse:new_notification"
-                hx-swap="innerHTML"
-                hx-target="#messages">
-        </div>
-    </div>
+
+
+        
 
 {% endblock %}
 {% block script %}
 <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
 <script>
-    document.body.addEventListener('sse:new_notification', function (evt) {
+        // Setup EventSource
+        const source = new EventSource('http://localhost:6767/realtime/posts/');
+        console.log("Connected")
 
-        //* If a JSON string was sent, leave it as it is 
-        //evt.detail.elt.setAttribute("hx-vals", evt.detail.data);
+        source.onmessage = function(event) {
+        fetch(`/posts/new/${event.data}/`)
+           .then(response => response.text())
+           .then(data => { 
+             existing = notifications.innerHTML; 
+             notifications.innerHTML = data + existing; 
+             x = document.getElementById("newMessage");
+             x.style.display = "block";
+             htmx.process(notifications); 
+           });
+        };
 
-        //* if not
-        var msg = {};
-        console.log(evt.detail.data);   
-        //evt.detail.elt.setAttribute("hx-vals", JSON.stringify(msg));
-    });
-document.addEventListener('htmx:configRequest', (evt) => {
-    evt.detail.headers = [];
-});
+
 </script>
 
 {% endblock %}
