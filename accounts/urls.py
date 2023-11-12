@@ -3,7 +3,10 @@ from django.urls import path
 
 import accounts.views as user_views
 
+app_name="accounts"
+
 urlpatterns = [
+    path("", user_views.index, name="index"),
     path("register/", user_views.register, name="register"),
     path(
         "login/",

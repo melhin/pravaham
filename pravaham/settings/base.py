@@ -163,7 +163,9 @@ if REDIS_DSN:
         REDIS_DSN = urlunsplit([scheme, f":{REDIS_PASSWORD}@{host}", path, "", ""])
 
 NOTIFICATION_POST = "notification.post"
-LOG_LEVEL = Value(environ_prefix=None, environ_name="LOG_LEVEL", default="DEBUG" if DEBUG else "INFO")
+LOG_LEVEL = Value(
+    environ_prefix=None, environ_name="LOG_LEVEL", default="DEBUG" if DEBUG else "INFO"
+)
 LOG_JSON = BooleanValue(environ_prefix=None, environ_name="LOG_JSON", default=True)
 LOGGING = {
     "version": 1,
@@ -185,3 +187,5 @@ LOGGING = {
         },
     },
 }
+LOGIN_REDIRECT_URL = "/posts/lobby"
+STREAM_SERVER = Value(environ_prefix=None, environ_name="STREAM_SERVER")

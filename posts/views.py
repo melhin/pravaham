@@ -1,4 +1,6 @@
-# Create your views here.
+import urllib
+
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
@@ -35,10 +37,12 @@ def lobby(request: HttpRequest) -> HttpResponse:
                 "created_at": post.created_at.isoformat(),
             }
         )
+    stream_server = urllib.parse.urljoin(settings.STREAM_SERVER, "/realtime/posts/")
+    print(stream_server)
     return render(
         request,
         "posts/lobby.html",
-        context={"messages": messages},
+        context={"messages": messages, "stream_server": stream_server},
     )
 
 

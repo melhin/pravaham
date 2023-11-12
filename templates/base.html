@@ -15,11 +15,10 @@
 
 </head>
 <div>
-    <a href="{% url 'index' %}">Home</a>
     {% if user.is_authenticated %}
-    <a href="{% url 'logout' %}">Logout</a>
-    {% else %}
-    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'accounts:logout' %}">Logout</a>
+    <a href="{% url 'posts:create' %}">Create Post</a>
+    <a href="{% url 'posts:lobby' %}">Lobby</a>
     {% endif %}
 </div>
 

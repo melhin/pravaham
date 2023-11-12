@@ -41,8 +41,8 @@
 <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
 <script>
         // Setup EventSource
-        const source = new EventSource('http://localhost:6767/realtime/posts/');
-        console.log("Connected")
+        const source = new EventSource("{{ stream_server }}", { withCredentials: true });
+        console.log("Connected to {{ stream_server }}");
 
         source.onmessage = function(event) {
         fetch(`/posts/new/${event.data}/`)
