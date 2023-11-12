@@ -28,7 +28,6 @@ async def stream_posts(request: HttpRequest, *args, **kwargs):
     if not await ais_authenticated(user=user):
         return HttpResponseForbidden()
 
-    # async def streamed_events(channel_name: str) -> AsyncGenerator[str, None]:
     async def streamed_events() -> AsyncGenerator[str, None]:
         """Listen for events and generate an SSE message for each event"""
 
@@ -44,6 +43,39 @@ async def stream_posts(request: HttpRequest, *args, **kwargs):
                         event = f"data: {data['created_at']}\n\n".encode("utf-8")
                         logging.info(f"Sending :{event}")
                         yield event
+
+        except asyncio.CancelledError:
+            # Do any cleanup when the client disconnects
+            # Note: this will only be called starting from Django 5.0; until then, there is no cleanup,
+            # and you get some spammy 'took too long to shut down and was killed' log messages from Daphne etc.
+            raise
+
+    return StreamingHttpResponse(streamed_events(), content_type="text/event-stream")
+
+
+async def stream_content(request: HttpRequest, *args, **kwargs):
+    # user = await get_user_from_request(request=request)
+    # if not await ais_authenticated(user=user):
+    #    return HttpResponseForbidden()
+
+    async def streamed_events() -> AsyncGenerator[str, None]:
+        """Listen for events and generate an SSE message for each event"""
+
+        try:
+            connection = get_async_client()
+            while True:
+                msg = await connection.xread(
+                    count=1, block=5000, streams={settings.COMMON_STREAM: "$"}
+                )
+                if msg:
+                    data = json.loads(msg[0][1][0][1][b"v"])
+                    #data["timesince"] = str(msg[0][1][0][0])
+                    dumped_data = json.dumps(data)
+                    event = (
+                        f"data: {dumped_data}\n\n"
+                    )
+                    logging.info(f"Sending :{dumped_data}")
+                    yield event.encode("utf-8")
 
         except asyncio.CancelledError:
             # Do any cleanup when the client disconnects

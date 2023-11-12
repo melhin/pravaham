@@ -38,7 +38,6 @@ def lobby(request: HttpRequest) -> HttpResponse:
             }
         )
     stream_server = urllib.parse.urljoin(settings.STREAM_SERVER, "/realtime/posts/")
-    print(stream_server)
     return render(
         request,
         "posts/lobby.html",
@@ -65,4 +64,13 @@ def new_posts(request: HttpRequest, from_date: str) -> HttpResponse:
         request,
         "posts/new_posts.html",
         context={"messages": messages},
+    )
+
+@login_required
+def content(request: HttpRequest) -> HttpResponse:
+    stream_server = urllib.parse.urljoin(settings.STREAM_SERVER, "/realtime/content/")
+    return render(
+        request,
+        "realtime/content.html",
+        context={"stream_server": stream_server},
     )

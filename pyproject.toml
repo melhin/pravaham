@@ -16,6 +16,8 @@ redis = "^5.0.1"
 django-configurations = "^2.5"
 psycopg2 = "^2.9.9"
 django-cors-headers = "^4.3.0"
+httpx = "^0.25.1"
+httpx-sse = "^0.3.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
