@@ -66,7 +66,7 @@ def new_posts(request: HttpRequest, from_date: str) -> HttpResponse:
         context={"messages": messages},
     )
 
-@login_required
+#@login_required
 def content(request: HttpRequest) -> HttpResponse:
     stream_server = urllib.parse.urljoin(settings.STREAM_SERVER, "/realtime/content/")
     return render(

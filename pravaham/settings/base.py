@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
@@ -141,11 +142,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+BASE_DIR = os.path.abspath(os.path.dirname(__name__))
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [
-    "static",
+    BASE_DIR + "/static",
 ]
-STATIC_ROOT = "staticfiles"
+STATIC_ROOT = BASE_DIR + "/staticfiles"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

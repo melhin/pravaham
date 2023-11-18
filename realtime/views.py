@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 from typing import AsyncGenerator
+import uuid
 
 from asgiref.sync import sync_to_async
 from django.conf import settings
@@ -60,25 +61,26 @@ async def stream_content(request: HttpRequest, *args, **kwargs):
 
     async def streamed_events() -> AsyncGenerator[str, None]:
         """Listen for events and generate an SSE message for each event"""
+        connection_id = uuid.uuid4()
 
         try:
             connection = get_async_client()
+            logging.info(f"{connection_id}: Connecting to stream")
             while True:
+                logging.info(f"{connection_id} waiting for messages stream")
                 msg = await connection.xread(
                     count=1, block=5000, streams={settings.COMMON_STREAM: "$"}
                 )
                 if msg:
                     data = json.loads(msg[0][1][0][1][b"v"])
-                    #data["timesince"] = str(msg[0][1][0][0])
                     dumped_data = json.dumps(data)
                     event = (
                         f"data: {dumped_data}\n\n"
                     )
-                    logging.info(f"Sending :{dumped_data}")
                     yield event.encode("utf-8")
 
         except asyncio.CancelledError:
-            # Do any cleanup when the client disconnects
+            # Do any cleanup when the clent disconnects
             # Note: this will only be called starting from Django 5.0; until then, there is no cleanup,
             # and you get some spammy 'took too long to shut down and was killed' log messages from Daphne etc.
             raise

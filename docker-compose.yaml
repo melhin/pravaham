@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 volumes:
   pravham_pg_data: {}
@@ -12,7 +12,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - pravham_pg_data:/var/lib/postgresql/data
   redis:
@@ -21,4 +21,62 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - '6379:6379'
+      - "6379:6379"
+  asyncapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - "redis"
+      - "db"
+    environment:
+      DB_HOST: db
+      DB_NAME: pravaham
+      DB_USER: postgres
+      DB_PASS: postgres
+      REDIS_DSN: redis://redis:6379/1
+      DJANGO_SETTINGS_MODULE: pravaham.settings.async_base
+    command:
+      - async
+
+    ports:
+      - "8002:8002"
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - "redis"
+      - "db"
+      - "asyncapp"
+    environment:
+      DB_HOST: db
+      DB_NAME: pravaham
+      DB_USER: postgres
+      DB_PASS: postgres
+      REDIS_DSN: redis://redis:6379/1
+      DJANGO_SETTINGS_MODULE: pravaham.settings.base
+      STREAM_SERVER: http://localhost:8002/
+
+    ports:
+      - "8001:8001"
+  runfeed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - "redis"
+      - "db"
+      - "asyncapp"
+    environment:
+      DB_HOST: db
+      DB_NAME: pravaham
+      DB_USER: postgres
+      DB_PASS: postgres
+      REDIS_DSN: redis://redis:6379/1
+      DJANGO_SETTINGS_MODULE: pravaham.settings.async_base
+      MASTODON_BEARER_TOKEN: ${MASTODON_BEARER_TOKEN}
+    command:
+      - bash
+      - -c
+      - "exit 0"
