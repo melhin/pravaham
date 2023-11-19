@@ -4,6 +4,15 @@ volumes:
   pravham_pg_data: {}
 
 services:
+  revproxy:
+    container_name: revproxy
+    build: nginx_revproxy
+    depends_on:
+      - webapp
+      - asyncapp
+    restart: always
+    ports:
+      - 8000:80
   db:
     image: postgres:13
     restart: on-failure
