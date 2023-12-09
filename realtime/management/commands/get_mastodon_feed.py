@@ -34,8 +34,8 @@ class Command(BaseCommand):
                     try:
                         data = json.loads(sse.data)
                     except Exception as ex:
-                        print(f"{ex}: {sse.data}")
-                        print("!" * 10)
+                        logger.error("%s: %s" % (ex, sse.data))
+                        logger.error("!" * 10)
                         continue
                     if sse.event == "update":
                         if not data["sensitive"]:
@@ -45,12 +45,11 @@ class Command(BaseCommand):
                                 "created_at": data["created_at"],
                                 "tags": "".join(ele["name"] for ele in data["tags"]),
                             }
-                            print(
+                            logger.info(
                                 f"{dct['created_at']} {dct['account']}: {dct['content']} | {dct['tags']}"
                             )
-                            print("#" * 10)
-                            print()
+                            logger.info("#" * 10)
                             connection.xadd(
                                 name=settings.COMMON_STREAM,
-                                fields={'v': json.dumps(dct)}
+                                fields={"v": json.dumps(dct)},
                             )

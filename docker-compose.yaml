@@ -45,6 +45,7 @@ services:
       DB_PASS: postgres
       REDIS_DSN: redis://redis:6379/1
       DJANGO_SETTINGS_MODULE: pravaham.settings.async_base
+      GUNICORN_WORKERS: 4
     command:
       - async
 
