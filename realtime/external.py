@@ -30,4 +30,5 @@ async def get_messages_from_stream(last_id: str, connection_factory=AsyncRedisCo
     logger.info("Fetching from stream")
     connection_factory = connection_factory()
     connection = await connection_factory.get_connection()
-    return await connection.xrange(settings.COMMON_STREAM, "-", f"({last_id}")
+    logger.info(settings.COMMON_STREAM + f"{last_id}" + "+")
+    return await connection.xrange(settings.COMMON_STREAM, f"{last_id}", "+")

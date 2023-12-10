@@ -28,3 +28,10 @@ def produce(message: dict, connection_factory=RedisConnectionFactory):
     logger.info("Sending message")
     pubsub = connection_factory().get_connection()
     pubsub.publish(settings.NOTIFICATION_POST, json.dumps(message))
+
+def get_last_messages_from_stream(connection_factory=RedisConnectionFactory):
+    
+    connection = connection_factory().get_connection()
+    messages = connection.xrange(settings.COMMON_STREAM, "-", "+", count=10)
+    messages.reverse()
+    return messages

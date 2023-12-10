@@ -49,7 +49,9 @@ class Command(BaseCommand):
                                 f"{dct['created_at']} {dct['account']}: {dct['content']} | {dct['tags']}"
                             )
                             logger.info("#" * 10)
-                            connection.xadd(
+                            addition_id = connection.xadd(
                                 name=settings.COMMON_STREAM,
                                 fields={"v": json.dumps(dct)},
                             )
+                            published_message = {"new_message_id": addition_id.decode("utf-8")}
+                            connection.publish(settings.INSTANT_NOTIFICATION_CHANNEL, json.dumps(published_message))

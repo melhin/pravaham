@@ -9,10 +9,8 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.http import (
     HttpRequest,
-    HttpResponse,
     HttpResponseForbidden,
     StreamingHttpResponse,
-    JsonResponse,
 )
 from django.shortcuts import render
 
@@ -53,9 +51,6 @@ async def stream_posts(request: HttpRequest, *args, **kwargs):
                         yield event
 
         except asyncio.CancelledError:
-            # Do any cleanup when the client disconnects
-            # Note: this will only be called starting from Django 5.0; until then, there is no cleanup,
-            # and you get some spammy 'took too long to shut down and was killed' log messages from Daphne etc.
             raise
 
     return StreamingHttpResponse(streamed_events(), content_type="text/event-stream")
@@ -90,10 +85,41 @@ async def stream_content(request: HttpRequest, *args, **kwargs):
     return StreamingHttpResponse(streamed_events(), content_type="text/event-stream")
 
 
+async def stream_new_content_notification(request: HttpRequest, *args, **kwargs):
+    async def streamed_events() -> AsyncGenerator[str, None]:
+        """Listen for events and generate an SSE message for each event"""
+        connection_id = uuid.uuid4()
+        events_count = 0
+
+        try:
+            async with get_async_client().pubsub() as pubsub:
+                logging.info(f"{connection_id}: Connecting to stream")
+                await pubsub.subscribe(settings.INSTANT_NOTIFICATION_CHANNEL)
+                while True:
+                    msg = await pubsub.get_message(
+                        ignore_subscribe_messages=True, timeout=5000
+                    )
+                    if msg:
+                        data = json.loads(msg["data"])
+                        logging.info(data)
+                        dumped_data = json.dumps(data)
+                        event = f"data: {dumped_data}\n\n"
+                        events_count += 1
+                        logging.info(f"{connection_id}: Sent events. {events_count}")
+                        yield event
+
+        except asyncio.CancelledError:
+            logging.info(f"{connection_id}: Disconnected after events. {events_count}")
+            raise
+
+    return StreamingHttpResponse(streamed_events(), content_type="text/event-stream")
+
+
 async def get_new_content(request: HttpRequest, last_id: str, *args, **kwargs):
-    response = await get_messages_from_stream(last_id=last_id)
+    messages_from_stream = await get_messages_from_stream(last_id=last_id)
+    messages_from_stream.reverse()
     messages = []
-    for ele in response:
+    for ele in messages_from_stream:
         post = json.loads(ele[1][b"v"])
         messages.append(
             {
@@ -104,6 +130,6 @@ async def get_new_content(request: HttpRequest, last_id: str, *args, **kwargs):
         )
     return render(
         request,
-        "posts/new_posts.html",
+        "realtime/new_posts.html",
         context={"messages": messages},
     )

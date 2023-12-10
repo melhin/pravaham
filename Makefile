@@ -13,3 +13,5 @@ stop:
 	$(COMPOSE) down
 logs:
 	$(COMPOSE) logs --follow --tail 1000
+local-setup:
+	${COMPOSE} up db redis
