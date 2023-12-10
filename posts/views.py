@@ -67,6 +67,7 @@ def new_posts(request: HttpRequest, from_date: str) -> HttpResponse:
         context={"messages": messages},
     )
 
+
 def content(request: HttpRequest) -> HttpResponse:
     stream_server = urllib.parse.urljoin(settings.STREAM_SERVER, "/realtime")
     messages_from_stream = get_last_messages_from_stream()
@@ -76,7 +77,7 @@ def content(request: HttpRequest) -> HttpResponse:
         post = json.loads(ele[1][b"v"])
         messages.append(
             {
-                "text": post["content"],
+                "text": post["content"].replace("class=\"invisible\"", ""),
                 "creator": post["account"],
                 "created_at": post["created_at"],
             }

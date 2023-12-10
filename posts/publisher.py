@@ -9,8 +9,6 @@ from commons.share import Singleton
 logger = logging.getLogger(__name__)
 
 
-
-
 class RedisConnectionFactory(metaclass=Singleton):
     """A singleton instance for redis connections for producer"""
 
@@ -19,18 +17,18 @@ class RedisConnectionFactory(metaclass=Singleton):
         self.connection_pool = ConnectionPool.from_url(
             url=settings.REDIS_DSN, max_connections=max_connections
         )
-    
+
     def get_connection(self):
         return Redis(connection_pool=self.connection_pool)
 
+
 def produce(message: dict, connection_factory=RedisConnectionFactory):
-    
     logger.info("Sending message")
     pubsub = connection_factory().get_connection()
     pubsub.publish(settings.NOTIFICATION_POST, json.dumps(message))
 
+
 def get_last_messages_from_stream(connection_factory=RedisConnectionFactory):
-    
     connection = connection_factory().get_connection()
     messages = connection.xrange(settings.COMMON_STREAM, "-", "+", count=10)
     messages.reverse()

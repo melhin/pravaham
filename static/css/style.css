@@ -1,5 +1,112 @@
 body {
     margin: 0;
     padding: 0;
-    background: #aaaadd;
+    background: #131719;
+    color: #a3a3a3 
+}
+.messageBox{
+    background-color: #323a3d;
+    border-radius: 25px;
+    padding: 15px;
+    margin-top: 20px;
+}
+.user{
+font-size: 18px;
+margin: 0 0 2px 0;
+margin-top: 0px;
+margin-bottom: 2px;
+color: #f4e0e0;
+font-weight: 700;
+}
+
+.message{
+    font-size: 14px;
+    color: rgb(159, 154, 154);
+}
+.message .time {
+    font-size: 0.7rem;
+    color: rgba(221, 221, 221, 0.35);
+    margin-top: 3px;
+    float: right;
+    cursor: default;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    display:inline-block;
+}
+
+.container{
+    padding: 8px;
+}
+nav{
+    width: 100%;
+    float: left;
+}
+
+.menu{
+    margin: 0;
+    padding: 8px;
+    height: 100%;
+}
+
+.menu li{
+    display: inline;
+}
+
+
+.button:link{
+    color: #ffffff;
+}
+
+.button:hover{
+    background-color: #786ed4;
+}
+.logout{
+    float: right;
+}
+
+.btn-link {
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    font-family: inherit;
+    font-size: inherit;
+    color: #ffffff;
+}
+.header-link {
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    padding-right: 20px;
+    text-decoration: underline;
+    font-family: inherit;
+    font-size: inherit;
+    color: #ffffff;
+}
+.btn-link:hover{
+    color: #786ed4;
+}
+
+.login {
+    display: block;
+    margin-bottom: 20px;
+    padding-left: 20px;
+}
+
+
+.register {
+    display: block;
+    margin-bottom: 20px;
+    padding-left: 20px;
+}
+
+
+td {
+    margin: 12px 12px 12px 12px;
+    padding: 12px 12px 12px 12px;
 }

@@ -1,20 +1,97 @@
-{% extends 'base.html' %}
-{% block base %}
-    <div class="content-section">
-        <form method="POST">
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Register Now</legend>
-                {{ form.as_p }}
-            </fieldset>
+{% extends 'base.html' %} {% block base %}
+<div class="content-section">
+  <form method="POST">
+    {% csrf_token %}
+    <legend class="border-bottom mb-4">Register Now</legend>
+    <div class="register">
+      <table>
+        <tr>
+          <td>
+            <label for="id_email">Email:</label>
+          </td>
+          <td>
+            <input
+              type="email"
+              name="email"
+              maxlength="254"
+              autofocus
+              required
+              id="id_email"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="id_password1">Password:</label>
+          </td>
+          <td>
+            <input
+              type="password"
+              name="password1"
+              autocomplete="new-password"
+              required
+              aria-describedby="id_password1_helptext"
+              id="id_password1"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="id_password2">Password confirmation:</label>
+          </td>
+          <td>
+            <input
+              type="password"
+              name="password2"
+              autocomplete="new-password"
+              required
+              aria-describedby="id_password2_helptext"
+              id="id_password2"
+            />
+          </td>
+
+          <td>
+            <span class="helptext" id="id_password2_helptext"
+              >Enter the same password as before, for verification.</span
+            >
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <p>
+              <span class="helptext" id="id_password1_helptext"
+                ><ul>
+                  <li>
+                    Your password can’t be too similar to your other personal
+                    information.
+                  </li>
+                  <li>Your password must contain at least 8 characters.</li>
+                  <li>Your password can’t be a commonly used password.</li>
+                  <li>Your password can’t be entirely numeric.</li>
+                </ul></span
+              >
+            </p>
+
+            <p></p>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Sign Up</button>
+              <button class="btn btn-outline-info" type="submit">
+                Sign Up
+              </button>
             </div>
-        </form>
-        <div class="border-top pt-3">
-            <small class="text-muted">
-		    Already Have An Account? <a class="ml-2" href="{% url 'login' %}">Log In</a>
-            </small>
-        </div>
+          </td>
+        </tr>
+      </table>
     </div>
+  </form>
+  <div class="border-top pt-3">
+    <small>
+      Already Have An Account?
+      <a class="ml-2" href="{% url 'accounts:login' %}">Log In</a>
+    </small>
+  </div>
+</div>
 {% endblock %}

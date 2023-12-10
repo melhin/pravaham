@@ -12,22 +12,18 @@ def index(request):
         return redirect(reverse("posts:lobby"))
     return redirect(reverse("accounts:login"))
 
+
 def register(request):
     if request.method == "POST":
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get("username")
-            raw_password = form.cleaned_data.get("password1")
-            user = authenticate(email=username, password=raw_password)
+            user = form.save()
             login(request, user)
             messages.success(
                 request,
-                f"Your account has been created and you are now logged in as {username}",
+                f"Your account has been created",
             )
             return redirect("posts:lobby")
     else:
         form = UserRegisterForm()
     return render(request, "accounts/register.html", {"form": form})
-
-

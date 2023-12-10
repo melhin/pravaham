@@ -1,62 +1,41 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block base %}
+<h4 style="display: none" id="newMessage">New Mastodon Posts</h4>
+<div id="notifications"></div>
 
-{% block base %}
-    <h4 style="display:none" id="newMessage"> New Mastadon Posts </h4>
-     <div id="notifications">
+<h2>Mastodon Posts</h2>
+
+<div id="messages">
+  {% for message in messages %}
+  <div class="messageBox">
+    <div class="user">{{ message.creator }}</div>
+    <div class="message">
+      {{ message.text | safe }}
+      <span class="time"> {{ message.created_at }} </span>
     </div>
-    
-    <h2>Mastadon Posts</h2>
-    
-    <div id="messages">
-    {% for message in messages %}
-    <div style="border: 1px solid black; margin: 5px; padding: 5px;">
-        <span class="createdAt">
-            {{ message.created_at }}
-        </span>
-        <strong class="user">
-           {{ message.creator }}
-        </strong>:
-        <span class="message">
-            {{ message.text }}
-        </span>
-    </div>
-    {% endfor %}
-    </div>
-    
-    
-    <template id="message">
-        <div style="border: 1px solid black; margin: 5px; padding: 5px;">
-            <strong class="createdAt"></strong> :
-            <strong class="user"></strong> :
-            <span class="message"></span>
-        </div>
-    </template>
+  </div>
+  {% endfor %}
+</div>
 
-
-
-        
-
-{% endblock %}
-{% block script %}
+{% endblock %} {% block script %}
 <script>
-        const source = new EventSource("{{ stream_server }}/content/notifications/", { withCredentials: true });
-        console.log("Connected to {{ stream_server }}");
+  const source = new EventSource("{{ stream_server }}/content/notifications/", {
+    withCredentials: true,
+  });
+  console.log("Connected to {{ stream_server }}");
 
-        source.onmessage = function(event) {
-        const payload = JSON.parse(event.data);
-        console.log(payload);
-        fetch(`{{ stream_server }}/content/new/${payload.new_message_id}/`)
-           .then(response => response.text())
-           .then(data => { 
-             existing = notifications.innerHTML; 
-             notifications.innerHTML = data + existing; 
-             x = document.getElementById("newMessage");
-             x.style.display = "block";
-             htmx.process(notifications); 
-           });
-        };
-
-
+  source.onmessage = function (event) {
+    const payload = JSON.parse(event.data);
+    console.log(payload);
+    fetch(`{{ stream_server }}/content/new/${payload.new_message_id}/`)
+      .then((response) => response.text())
+      .then((data) => {
+        existing = notifications.innerHTML;
+        notifications.innerHTML = data + existing;
+        x = document.getElementById("newMessage");
+        x.style.display = "block";
+        htmx.process(notifications);
+      });
+  };
 </script>
 
 {% endblock %}

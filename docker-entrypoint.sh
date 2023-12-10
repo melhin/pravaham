@@ -15,7 +15,7 @@ do
             exec gunicorn pravaham.asgi:application -c uvicorn.conf.py --worker-class uvicorn.workers.UvicornWorker 
             ;;
         runfeed)
-            echo "Starting mastadon feed"
+            echo "Starting mastodon feed"
             python ./manage.py get_mastodon_feed --domain https://streaming.mastodon.online/
             ;;
         *)

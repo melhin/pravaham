@@ -1,24 +1,11 @@
-
+<div id="messages">
+  {% for message in messages %}
+  <div class="messageBox">
+    <div class="user">{{ message.creator__email }}</div>
+    <div class="message">
+       {{ message.text }}
+      <span class="time"> {{ message.created_at }} </span>
     </div>
-    {% for message in messages %}
-    <div style="border: 1px solid black; margin: 5px; padding: 5px;">
-        <span class="createdAt">
-            {{ message.created_at }}
-        </span>
-        <strong class="user">
-           {{ message.creator__email }}
-        </strong>:
-        <span class="message">
-            {{ message.text }}
-        </span>
-    </div>
-    {% endfor %}
-
-
-    <template id="message">
-        <div style="border: 1px solid black; margin: 5px; padding: 5px;">
-            <strong class="createdAt"></strong> :
-            <strong class="user"></strong> :
-            <span class="message"></span>
-        </div>
-    </template>
+  </div>
+  {% endfor %}
+</div>
