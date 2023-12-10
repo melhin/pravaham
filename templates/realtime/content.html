@@ -1,13 +1,26 @@
 {% extends 'base.html' %}
 
 {% block base %}
-    <h4 style="display:none" id="newMessage"> New Messages </h4>
+    <h4 style="display:none" id="newMessage"> New Mastadon Posts </h4>
      <div id="notifications">
     </div>
     
-    <h2>Lobby</h2>
+    <h2>Mastadon Posts</h2>
     
     <div id="messages">
+    {% for message in messages %}
+    <div style="border: 1px solid black; margin: 5px; padding: 5px;">
+        <span class="createdAt">
+            {{ message.created_at }}
+        </span>
+        <strong class="user">
+           {{ message.creator }}
+        </strong>:
+        <span class="message">
+            {{ message.text }}
+        </span>
+    </div>
+    {% endfor %}
     </div>
     
     
@@ -26,22 +39,21 @@
 {% endblock %}
 {% block script %}
 <script>
-        // Setup EventSource
-        const source = new EventSource("{{ stream_server }}", { withCredentials: true });
+        const source = new EventSource("{{ stream_server }}/content/notifications/", { withCredentials: true });
         console.log("Connected to {{ stream_server }}");
 
         source.onmessage = function(event) {
-            const payload = JSON.parse(event.data);
-            let template = document.getElementById('message');
-            let clone = template.content.cloneNode(true);
-
-            // Update our cloned template
-            clone.querySelector('.createdAt').innerText = payload.created_at;
-            clone.querySelector('.user').innerText = payload.account;
-            clone.querySelector('.message').innerText = payload.content;
-
-            // Append the cloned template to our list of messages
-            document.getElementById('messages').prepend(clone);
+        const payload = JSON.parse(event.data);
+        console.log(payload);
+        fetch(`{{ stream_server }}/content/new/${payload.new_message_id}/`)
+           .then(response => response.text())
+           .then(data => { 
+             existing = notifications.innerHTML; 
+             notifications.innerHTML = data + existing; 
+             x = document.getElementById("newMessage");
+             x.style.display = "block";
+             htmx.process(notifications); 
+           });
         };
 
 

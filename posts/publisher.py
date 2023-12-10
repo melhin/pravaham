@@ -4,16 +4,11 @@ import logging
 from django.conf import settings
 from redis import ConnectionPool, Redis
 
+from commons.share import Singleton
+
 logger = logging.getLogger(__name__)
 
 
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
 
 
 class RedisConnectionFactory(metaclass=Singleton):
@@ -33,3 +28,10 @@ def produce(message: dict, connection_factory=RedisConnectionFactory):
     logger.info("Sending message")
     pubsub = connection_factory().get_connection()
     pubsub.publish(settings.NOTIFICATION_POST, json.dumps(message))
+
+def get_last_messages_from_stream(connection_factory=RedisConnectionFactory):
+    
+    connection = connection_factory().get_connection()
+    messages = connection.xrange(settings.COMMON_STREAM, "-", "+", count=10)
+    messages.reverse()
+    return messages

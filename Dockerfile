@@ -1,4 +1,4 @@
-FROM python:3.10.1
+FROM python:3.11.7
 
 LABEL org.opencontainers.image.source=https://github.com/melhin/just-another-rss-reader
 

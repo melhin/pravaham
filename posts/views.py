@@ -1,3 +1,4 @@
+import json
 import urllib
 
 from django.conf import settings
@@ -7,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from posts.models import Post
-from posts.publisher import produce
+from posts.publisher import get_last_messages_from_stream, produce
 
 
 @login_required
@@ -66,11 +67,22 @@ def new_posts(request: HttpRequest, from_date: str) -> HttpResponse:
         context={"messages": messages},
     )
 
-#@login_required
 def content(request: HttpRequest) -> HttpResponse:
-    stream_server = urllib.parse.urljoin(settings.STREAM_SERVER, "/realtime/content/")
+    stream_server = urllib.parse.urljoin(settings.STREAM_SERVER, "/realtime")
+    messages_from_stream = get_last_messages_from_stream()
+    messages_from_stream.reverse()
+    messages = []
+    for ele in messages_from_stream:
+        post = json.loads(ele[1][b"v"])
+        messages.append(
+            {
+                "text": post["content"],
+                "creator": post["account"],
+                "created_at": post["created_at"],
+            }
+        )
     return render(
         request,
         "realtime/content.html",
-        context={"stream_server": stream_server},
+        context={"stream_server": stream_server, "messages": messages},
     )

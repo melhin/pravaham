@@ -34,8 +34,8 @@ class Command(BaseCommand):
                     try:
                         data = json.loads(sse.data)
                     except Exception as ex:
-                        print(f"{ex}: {sse.data}")
-                        print("!" * 10)
+                        logger.error("%s: %s" % (ex, sse.data))
+                        logger.error("!" * 10)
                         continue
                     if sse.event == "update":
                         if not data["sensitive"]:
@@ -45,12 +45,13 @@ class Command(BaseCommand):
                                 "created_at": data["created_at"],
                                 "tags": "".join(ele["name"] for ele in data["tags"]),
                             }
-                            print(
+                            logger.info(
                                 f"{dct['created_at']} {dct['account']}: {dct['content']} | {dct['tags']}"
                             )
-                            print("#" * 10)
-                            print()
-                            connection.xadd(
+                            logger.info("#" * 10)
+                            addition_id = connection.xadd(
                                 name=settings.COMMON_STREAM,
-                                fields={'v': json.dumps(dct)}
+                                fields={"v": json.dumps(dct)},
                             )
+                            published_message = {"new_message_id": addition_id.decode("utf-8")}
+                            connection.publish(settings.INSTANT_NOTIFICATION_CHANNEL, json.dumps(published_message))
