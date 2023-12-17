@@ -47,7 +47,6 @@ async def stream_posts(request: HttpRequest, *args, **kwargs):
                     if msg:
                         data = json.loads(msg["data"])
                         event = f"data: {data['created_at']}\n\n".encode("utf-8")
-                        logging.info(f"Sending :{event}")
                         yield event
 
         except asyncio.CancelledError:
@@ -123,7 +122,7 @@ async def get_new_content(request: HttpRequest, last_id: str, *args, **kwargs):
         post = json.loads(ele[1][b"v"])
         messages.append(
             {
-                "text": post["content"],
+                "text": post["content"].replace("class=\"invisible\"", ""),
                 "creator": post["account"],
                 "created_at": post["created_at"],
             }
