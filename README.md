@@ -65,12 +65,10 @@ Ensure that you have Docker and Docker Compose installed on your machine.
 ### Case 2: Streaming the Mastodon firehose
 
 1. Navigate to the Mastodon firehose stream.
-   ```bash
-   http://localhost:8000/firehose/
-   ```
+  [http://localhost:8000/posts/content/](http://localhost:8000/posts/content/)
 2. Open the browser's console to view real-time updates from the Mastodon firehose.
 
-### Load Testing
+#### Load Testing
 
 1. Access the real-time content stream for load testing.
    ```bash
