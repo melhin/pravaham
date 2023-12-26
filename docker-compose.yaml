@@ -78,6 +78,8 @@ services:
       - "redis"
       - "db"
       - "asyncapp"
+    env_file:
+      .env
     environment:
       DB_HOST: db
       DB_NAME: pravaham
@@ -85,7 +87,6 @@ services:
       DB_PASS: postgres
       REDIS_DSN: redis://redis:6379/1
       DJANGO_SETTINGS_MODULE: pravaham.settings.async_base
-      MASTODON_BEARER_TOKEN: ${MASTODON_BEARER_TOKEN}
     command:
       - bash
       - -c

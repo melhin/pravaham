@@ -16,7 +16,7 @@ do
             ;;
         runfeed)
             echo "Starting mastodon feed"
-            python ./manage.py get_mastodon_feed --domain https://streaming.mastodon.online/
+            python ./manage.py get_mastodon_feed --domain $MASTODON_SERVER_DOMAIN
             ;;
         *)
             echo "Invalid option"

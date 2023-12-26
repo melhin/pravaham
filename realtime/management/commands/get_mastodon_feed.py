@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from httpx_sse import connect_sse
 
-from posts.publisher import RedisConnectionFactory
+from posts.external import RedisConnectionFactory
 
 logger = logging.getLogger(__name__)
 
@@ -53,5 +53,13 @@ class Command(BaseCommand):
                                 name=settings.COMMON_STREAM,
                                 fields={"v": json.dumps(dct)},
                             )
-                            published_message = {"new_message_id": addition_id.decode("utf-8")}
-                            connection.publish(settings.INSTANT_NOTIFICATION_CHANNEL, json.dumps(published_message))
+                            published_message = {
+                                "new_message_id": addition_id.decode("utf-8")
+                            }
+                            connection.publish(
+                                settings.INSTANT_NOTIFICATION_CHANNEL,
+                                json.dumps(published_message),
+                            )
+                            connection.publish(
+                                settings.INSTANT_STREAM_CHANNEL, json.dumps(dct)
+                            )
