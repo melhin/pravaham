@@ -195,3 +195,4 @@ MASTODON_BEARER_TOKEN = Value(environ_prefix=None, environ_name="MASTODON_BEARER
 COMMON_STREAM = "common_stream"
 INSTANT_NOTIFICATION_CHANNEL = "instant_notification_channel"
 INSTANT_STREAM_CHANNEL = "instant_stream_channel"
+LOGIN_URL = "accounts:login"

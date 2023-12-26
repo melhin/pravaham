@@ -54,7 +54,15 @@ Ensure that you have Docker and Docker Compose installed on your machine.
 4. **Nginx:**
    - Serves the application and routes the traffic
 
+5. **Feed Collector**
+   - Collect feeds from the streaming api from the mastodon server you choose
+
 ## Usage
+
+
+#### Before starting anything
+
+Have a **.env** file in the repo and then fill in the **mastodon server values** for streaming the feed
 
 ### Case 1: Real-time updates for logged-in users and their posts
 
@@ -62,10 +70,21 @@ Ensure that you have Docker and Docker Compose installed on your machine.
 2. Navigate to the User Posts link to see what logged in user posts have been made.
 3. In another window or possibly as another user you 
 
-### Case 2: Streaming the Mastodon firehose
+### Case 2: Streaming the Mastodon firehose for Non Logged in Users (Some JS)
 
 1. Navigate to the Mastodon firehose stream.
   [http://localhost:8000/posts/content/](http://localhost:8000/posts/content/)
+2. Run the following command for getting the feed.
+   ```bash
+   make runfeed
+   ```
+3. Navigate back to the browser
+
+### Case 3: Streaming the Mastodon firehose for Logged in Users (htmx)
+
+1. Create a user account and log in.
+2. Navigate to the Mastodon firehose stream.
+  [http://localhost:8000/posts/content/htmx/](http://localhost:8000/posts/content/htmx/)
 2. Run the following command for getting the feed.
    ```bash
    make runfeed
