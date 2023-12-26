@@ -23,7 +23,7 @@
   });
   console.log("Connected to {{ stream_server }}");
 
-  source.onmessage = function (event) {
+  source.addEventListener("new-notification", (event) => {
     const payload = JSON.parse(event.data);
     console.log(payload);
     fetch(`{{ stream_server }}/content/new/${payload.new_message_id}/`)
@@ -35,7 +35,7 @@
         x.style.display = "block";
         htmx.process(notifications);
       });
-  };
+  });
 </script>
 
 {% endblock %}

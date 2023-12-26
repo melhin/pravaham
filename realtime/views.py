@@ -14,7 +14,10 @@ from django.http import (
 )
 from django.shortcuts import render
 
-from realtime.external import get_async_client, get_messages_from_stream
+from realtime.external import (
+    get_async_client,
+    get_messages_from_stream,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +105,8 @@ async def stream_new_content_notification(request: HttpRequest, *args, **kwargs)
                         data = json.loads(msg["data"])
                         logging.info(data)
                         dumped_data = json.dumps(data)
-                        event = f"data: {dumped_data}\n\n"
+                        event = "event: new-notification\n"
+                        event += f"data: {dumped_data}\n\n"
                         events_count += 1
                         logging.info(f"{connection_id}: Sent events. {events_count}")
                         yield event
@@ -122,7 +126,7 @@ async def get_new_content(request: HttpRequest, last_id: str, *args, **kwargs):
         post = json.loads(ele[1][b"v"])
         messages.append(
             {
-                "text": post["content"].replace("class=\"invisible\"", ""),
+                "text": post["content"].replace('class="invisible"', ""),
                 "creator": post["account"],
                 "created_at": post["created_at"],
             }

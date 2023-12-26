@@ -1,5 +1,6 @@
 import json
 import logging
+from uuid import UUID
 
 from django.conf import settings
 from redis import ConnectionPool, Redis
@@ -30,6 +31,35 @@ def produce(message: dict, connection_factory=RedisConnectionFactory):
 
 def get_last_messages_from_stream(connection_factory=RedisConnectionFactory):
     connection = connection_factory().get_connection()
-    messages = connection.xrange(settings.COMMON_STREAM, "-", "+", count=10)
+    messages = connection.xrevrange(settings.COMMON_STREAM, "+", "-", count=10)
     messages.reverse()
     return messages
+
+
+def set_last_seen(
+    uuid: UUID,
+    last_seen: str,
+    connection_factory=RedisConnectionFactory,
+    expire_in: int = 500,
+):
+    connection = connection_factory().get_connection()
+    connection.set(str(uuid), last_seen, ex=expire_in)
+
+
+def get_messages_from_stream(
+    last_id: str | None = None, connection_factory=RedisConnectionFactory
+):
+    logger.info("Fetching from stream")
+    connection_factory = connection_factory()
+    connection = connection_factory.get_connection()
+    if not last_id:
+        return connection.xrevrange(settings.COMMON_STREAM, "+", "-", count=10)
+    return connection.xrevrange(settings.COMMON_STREAM, "+", f"({last_id}")
+
+
+def get_last_seen(
+    uuid: UUID,
+    connection_factory=RedisConnectionFactory,
+):
+    connection = connection_factory().get_connection()
+    return connection.get(str(uuid))

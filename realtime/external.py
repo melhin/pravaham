@@ -26,7 +26,10 @@ class AsyncRedisConnectionFactory(metaclass=Singleton):
     async def get_connection(self):
         return aredis.Redis(connection_pool=self.connection_pool)
 
-async def get_messages_from_stream(last_id: str, connection_factory=AsyncRedisConnectionFactory):
+
+async def get_messages_from_stream(
+    last_id: str, connection_factory=AsyncRedisConnectionFactory
+):
     logger.info("Fetching from stream")
     connection_factory = connection_factory()
     connection = await connection_factory.get_connection()

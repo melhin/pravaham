@@ -1,6 +1,6 @@
 # Create your views here.
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -21,7 +21,7 @@ def register(request):
             login(request, user)
             messages.success(
                 request,
-                f"Your account has been created",
+                "Your account has been created",
             )
             return redirect("posts:lobby")
     else:
