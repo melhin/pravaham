@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11.1"
 Django = {version = "5.0b1", allow-prereleases = true}
-gunicorn = "^21.2.0"
+gunicorn = "^22.0.0"
 uvicorn = "^0.23.2"
 django-htmx = "^1.17.0"
 redis = "^5.0.1"
