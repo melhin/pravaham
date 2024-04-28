@@ -1,11 +1,6 @@
 from django.urls import path
 
-from realtime.views import (
-    get_new_content,
-    stream_content,
-    stream_new_content_notification,
-    stream_posts,
-)
+from realtime.views import stream_posts, stream_timer, stream_content, get_new_content, stream_new_content_notification
 
 app_name = "realtime"
 
@@ -18,4 +13,5 @@ urlpatterns = [
         name="content-notifications",
     ),
     path("content/new/<str:last_id>/", get_new_content, name="new-content"),
+    path("timer/", stream_timer, name="timer"),
 ]

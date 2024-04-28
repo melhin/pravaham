@@ -14,6 +14,11 @@ do
             echo "Starting async server"
             exec gunicorn pravaham.asgi:application -c uvicorn.conf.py --worker-class uvicorn.workers.UvicornWorker 
             ;;
+        async-local)
+            echo "Starting async server"
+            export DJANGO_SETTINGS_MODULE=pravaham.settings.async_base
+            exec uvicorn pravaham.asgi:application --port 8002 --reload --timeout-graceful-shutdown 0
+            ;;
         runfeed)
             echo "Starting mastodon feed"
             python ./manage.py get_mastodon_feed --domain $MASTODON_SERVER_DOMAIN
