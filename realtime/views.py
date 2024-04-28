@@ -1,23 +1,17 @@
-import asyncio
 import json
-import logging
 import uuid
+import asyncio
+import logging
 from typing import AsyncGenerator
 
-from asgiref.sync import sync_to_async
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser, User
-from django.http import (
-    HttpRequest,
-    HttpResponseForbidden,
-    StreamingHttpResponse,
-)
+from django.http import HttpRequest, HttpResponseForbidden, StreamingHttpResponse
 from django.shortcuts import render
+from django.contrib.auth.models import User, AnonymousUser
 
-from realtime.external import (
-    get_async_client,
-    get_messages_from_stream,
-)
+from asgiref.sync import sync_to_async
+
+from realtime.external import get_async_client, get_messages_from_stream
 
 logger = logging.getLogger(__name__)
 
@@ -136,3 +130,26 @@ async def get_new_content(request: HttpRequest, last_id: str, *args, **kwargs):
         "realtime/new_posts.html",
         context={"messages": messages},
     )
+
+
+async def stream_timer(request: HttpRequest, *args, **kwargs):
+    async def streamed_events() -> AsyncGenerator[str, None]:
+        """Listen for events and generate an SSE message for each event"""
+        connection_id = uuid.uuid4()
+        events_count = 0
+
+        try:
+            logging.info(f"{connection_id}: Connecting to stream")
+            while True:
+                events_count += 1
+                event = "event: new\n"
+                event += f"data: {events_count}\n\n"
+                logging.info(f"{connection_id}: Sent events. {events_count}")
+                yield event
+                await asyncio.sleep(1)
+
+        except asyncio.CancelledError:
+            logging.info(f"{connection_id}: Disconnected after events. {events_count}")
+            raise
+
+    return StreamingHttpResponse(streamed_events(), content_type="text/event-stream")
