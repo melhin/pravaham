@@ -1,0 +1,10 @@
+{% extends 'realtime/live_qa/base.html' %}
+
+{% block base %}
+<form method='post' action='{% url "realtime:qa-send" %}'>
+        {% csrf_token %}
+        <input name='name' id='name' placeholder='Name'>
+        <input name='question' id='question' placeholder='Question'>
+        <button>Post</button>
+</form>
+{% endblock %}

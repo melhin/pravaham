@@ -1,4 +1,6 @@
+import json
 import logging
+from dataclasses import asdict, dataclass
 from functools import cache
 
 import redis.asyncio as aredis
@@ -7,6 +9,15 @@ from django.conf import settings
 from commons.share import Singleton
 
 logger = logging.getLogger(__name__)
+
+STREAM_MESSAGE_PREFIX = "realtime-qa:"
+LISTEN_TIMEOUT = 5000 * 3
+
+
+@dataclass
+class DataToSend:
+    name: str
+    question: str
 
 
 @cache
@@ -35,3 +46,40 @@ async def get_messages_from_stream(
     connection = await connection_factory.get_connection()
     logger.info(settings.COMMON_STREAM + f"{last_id}" + "+")
     return await connection.xrange(settings.COMMON_STREAM, f"{last_id}", "+")
+
+
+class QA:
+    def __init__(self, connection_factory=AsyncRedisConnectionFactory) -> None:
+        self.connection_factory = connection_factory()
+
+    async def send_notification_to_stream(
+        self,
+        stream_name: str,
+        message: DataToSend,
+    ):
+        aredis = await self.connection_factory.get_connection()
+        await aredis.xadd(name=stream_name, fields={"v": json.dumps(asdict(message))})
+        logger.info(f"Sent message to {stream_name}: {message}")
+
+    async def listen(
+        self, stream_name: str, last_id_returned: str, timeout=LISTEN_TIMEOUT
+    ):
+        logger.info("Fetching from stream")
+        aredis = await self.connection_factory.get_connection()
+        if not last_id_returned:
+            last_id_returned = "$"
+        return await aredis.xread(
+            count=1, streams={stream_name: last_id_returned}, block=timeout
+        )
+
+    async def get_messages_from_stream(
+        self,
+        stream_name: str,
+        last_id_returned: str,
+    ):
+        aredis = await self.connection_factory.get_connection()
+        logger.info(f"{stream_name} {last_id_returned}")
+        if not last_id_returned:
+            return await aredis.xrevrange(stream_name, "+", "-", count=10)
+        else:
+            return await aredis.xrange(stream_name, f"{last_id_returned}", "+")

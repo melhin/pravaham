@@ -1,15 +1,14 @@
-import json
-import uuid
 import asyncio
+import json
 import logging
+import uuid
 from typing import AsyncGenerator
 
+from asgiref.sync import sync_to_async
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser, User
 from django.http import HttpRequest, HttpResponseForbidden, StreamingHttpResponse
 from django.shortcuts import render
-from django.contrib.auth.models import User, AnonymousUser
-
-from asgiref.sync import sync_to_async
 
 from realtime.external import get_async_client, get_messages_from_stream
 

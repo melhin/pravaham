@@ -1,0 +1,11 @@
+<div id="messages">
+    {% for message in messages %}
+    <div class="messageBox">
+      <div class="user">{{ message.name }}</div>
+      <div class="message">
+          {{ message.question | safe }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  

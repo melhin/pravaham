@@ -1,0 +1,39 @@
+{% extends 'realtime/live_qa/base.html' %} {% block base %}
+<h2>Questions</h2>
+<div id="notifications"></div>
+
+
+<div id="messages">
+  {% for message in messages %}
+  <div class="messageBox">
+    <div class="user">{{ message.name }}</div>
+    <div class="message">
+      {{ message.question | safe }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %} {% block script %}
+<script>
+  const source = new EventSource("{{ stream_url }}", {
+    withCredentials: true,
+  });
+  console.log("Connected to {{ stream_url }}");
+
+  source.addEventListener("new-notification", (event) => {
+    const payload = JSON.parse(event.data);
+    console.log(payload);
+    fetch(`/realtime/qa/new/${payload.new_message_id}/`)
+      .then((response) => response.text())
+      .then((data) => {
+        existing = notifications.innerHTML;
+        notifications.innerHTML = data + existing;
+        x = document.getElementById("newMessage");
+        x.style.display = "block";
+        htmx.process(notifications);
+      });
+  });
+</script>
+
+{% endblock %}
