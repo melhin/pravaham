@@ -52,7 +52,7 @@ class QA:
     def __init__(self, connection_factory=AsyncRedisConnectionFactory) -> None:
         self.connection_factory = connection_factory()
 
-    async def send_notification_to_stream(
+    async def send_question_to_stream(
         self,
         stream_name: str,
         message: DataToSend,

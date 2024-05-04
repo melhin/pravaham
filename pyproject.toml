@@ -24,6 +24,7 @@ pytest = "^7.4.3"
 pytest-django = "^4.6.0"
 ruff = "^0.1.3"
 isort = "^5.12.0"
+watchfiles = "^0.21.0"
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.

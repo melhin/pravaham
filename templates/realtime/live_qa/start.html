@@ -1,0 +1,16 @@
+{% extends 'realtime/live_qa/base.html' %} {% block base %}
+<input name="name" id="name" placeholder="Name" />
+<input type="button" id="submitButton" name="theButton" value="Enter" />
+{% endblock %} {% block script %}
+<script>
+  var url = '{% url "realtime:qa-questions" "name"%}';
+  document.getElementById("submitButton").addEventListener("click", () => {
+    var name = encodeURIComponent(document.getElementById("name").value);
+    url = url.replace("name", name);
+    if (name) {
+      document.getElementById("name").value = ""; // Clear input field
+      window.location.href = url;
+    }
+  });
+</script>
+{% endblock %}

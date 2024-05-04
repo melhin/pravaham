@@ -7,7 +7,7 @@ from typing import AsyncGenerator
 
 from django import forms
 from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -37,14 +37,15 @@ async def create_question(request: HttpRequest, *args, **kwargs):
     stream_name = f"{STREAM_MESSAGE_PREFIX}common"
     form = QAForm(request.POST or None)
     if form.is_valid():
-        await sender.send_notification_to_stream(
+        await sender.send_question_to_stream(
             stream_name=stream_name,
             message=DataToSend(
                 name=form.cleaned_data["name"], question=form.cleaned_data["question"]
             ),
         )
-        return redirect(reverse("realtime:qa-create"))
+        return HttpResponse(status=200)
     else:
+        logger.error(form.errors.as_data())
         return HttpResponse(status=400)
 
 
@@ -115,9 +116,16 @@ async def get_new_questions(
 
 
 @require_http_methods(["GET"])
-async def questions(request: HttpRequest, *args, **kwargs):
-    stream_server = reverse("realtime:qa-listen")
+async def start(request: HttpRequest, *args, **kwargs):
+    return render(
+        request,
+        "realtime/live_qa/start.html",
+    )
 
+
+@require_http_methods(["GET"])
+async def questions(request: HttpRequest, name: str, *args, **kwargs):
+    stream_server = reverse("realtime:qa-listen")
     stream_name = f"{STREAM_MESSAGE_PREFIX}common"
     messages = QA()
     messages_from_stream = await messages.get_messages_from_stream(
@@ -138,5 +146,6 @@ async def questions(request: HttpRequest, *args, **kwargs):
         context={
             "stream_url": stream_server,
             "messages": messages,
+            "name": name,
         },
     )

@@ -1,39 +1,142 @@
-{% extends 'realtime/live_qa/base.html' %} {% block base %}
-<h2>Questions</h2>
-<div id="notifications"></div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Questions</title>
+    <script src="https://unpkg.com/htmx.org@1.6.0/dist/htmx.js"></script>
+    <link rel="stylesheet" href="{% static "css/style.css" %}" > <link
+    rel="stylesheet" href="{% static "css/mastodon.css" %}" >
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+      }
 
+      header,
+      footer {
+        padding: 10px;
+        background-color: #333;
+        color: white;
+        height: 100%;
+        width: 100%;
+      }
+      #chat-wrapper {
+        position: fixed;
+        top: 110px;
+        bottom: 110px;
+        overflow-y: auto;
 
-<div id="messages">
-  {% for message in messages %}
-  <div class="messageBox">
-    <div class="user">{{ message.name }}</div>
-    <div class="message">
-      {{ message.question | safe }}
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+      }
+      main {
+        overflow-y: auto;
+        padding: 10px;
+      }
+
+      #messages {
+        margin-bottom: 10px;
+      }
+
+      form {
+        display: flex;
+        background-color: #323a3d;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+      }
+
+      input[type="text"] {
+        flex-grow: 1;
+        margin-right: 10px;
+        font-size: 14px;
+        color: rgb(159, 154, 154);
+      }
+
+      button {
+        padding: 8px 16px;
+        border: none;
+        background-color: #333;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Questions</h1>
+    </header>
+
+    <div id="chat-wrapper">
+      <div id="notifications"></div>
+      <div id="messages">
+        {% for message in messages %}
+        <div class="messageBox">
+          <div class="user">{{ message.name }}</div>
+          <div class="message">{{ message.question | safe }}</div>
+        </div>
+        {% endfor %}
+      </div>
     </div>
-  </div>
-  {% endfor %}
-</div>
 
-{% endblock %} {% block script %}
-<script>
-  const source = new EventSource("{{ stream_url }}", {
-    withCredentials: true,
-  });
-  console.log("Connected to {{ stream_url }}");
+    <footer>
+      <form id="chat-form" onsubmit="submitForm(event)">
+        {% csrf_token %}
+        <input
+          type="text"
+          name="question"
+          id="question"
+          placeholder="Type your question here..."
+        />
+        <input type="hidden" name="name" value="{{ name }}" />
+        <button type="submit">Send</button>
+      </form>
+    </footer>
 
-  source.addEventListener("new-notification", (event) => {
-    const payload = JSON.parse(event.data);
-    console.log(payload);
-    fetch(`/realtime/qa/new/${payload.new_message_id}/`)
-      .then((response) => response.text())
-      .then((data) => {
-        existing = notifications.innerHTML;
-        notifications.innerHTML = data + existing;
-        x = document.getElementById("newMessage");
-        x.style.display = "block";
-        htmx.process(notifications);
+    <script>
+      const source = new EventSource("{{ stream_url }}", {
+        withCredentials: true,
       });
-  });
-</script>
+      console.log("Connected to {{ stream_url }}");
 
-{% endblock %}
+      source.addEventListener("new-notification", (event) => {
+        const payload = JSON.parse(event.data);
+        console.log(payload);
+        fetch(`/realtime/qa/new/${payload.new_message_id}/`)
+          .then((response) => response.text())
+          .then((data) => {
+            existing = notifications.innerHTML;
+            notifications.innerHTML = data + existing;
+            x = document.getElementById("newMessage");
+            x.style.display = "block";
+            htmx.process(notifications);
+          });
+      });
+
+      function submitForm(event) {
+        event.preventDefault();
+        var form = document.getElementById("chat-form");
+        var formData = new FormData(form);
+
+        fetch('{% url "realtime:qa-send" %}', {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("question").value = ""; // Clear input field
+          })
+          .catch((error) => {
+            console.error("Form submission error:", error);
+          });
+      }
+    </script>
+  </body>
+</html>
