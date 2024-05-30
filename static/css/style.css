@@ -10,7 +10,7 @@ body {
     padding: 15px;
     margin-top: 20px;
 }
-.user{
+.message{
 font-size: 18px;
 margin: 0 0 2px 0;
 margin-top: 0px;
@@ -19,11 +19,11 @@ color: #f4e0e0;
 font-weight: 700;
 }
 
-.message{
+.user{
     font-size: 14px;
     color: rgb(159, 154, 154);
 }
-.message .time {
+.time {
     font-size: 0.7rem;
     color: rgba(221, 221, 221, 0.35);
     margin-top: 3px;

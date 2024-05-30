@@ -10,8 +10,8 @@ from django.http import HttpRequest, HttpResponseForbidden, StreamingHttpRespons
 from django.utils import timezone
 
 from accounts.models import User
+from posts.async_external import aset_last_seen, listen_on_multiple_streams
 from posts.constants import USER_STREAM
-from posts.external import aset_last_seen, listen_on_multiple_streams
 
 logger = logging.getLogger(__name__)
 

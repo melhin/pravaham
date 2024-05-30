@@ -1,15 +1,22 @@
 {% extends 'base.html' %} {% block base %}
-<h4 style="display: none" id="newMessage">New Posts</h4>
+<h4 style="display: none" id="newMessage">New Mastodon Posts</h4>
 <div id="notifications"></div>
 
-<h2>Posts</h2>
+<h2> Posts</h2>
+<div hx-ext="sse" sse-connect="{{ stream_server }}/content/notifications/">
+  <div hx-get="{% url 'posts:new-content' %}" hx-trigger="sse:new-notification" hx-swap="afterbegin">
+  </div>
+</div>
 
 <div id="messages">
   {% for message in messages %}
   <div class="messageBox">
-    <div class="user">{{ message.creator__email }}</div>
     <div class="message">
-      {{ message.text }}
+
+    {{ message.text | safe }}
+    </div>
+    <div class="user">
+      {{ message.creator }}
       <span class="time"> {{ message.created_at }} </span>
     </div>
   </div>
@@ -17,25 +24,5 @@
 </div>
 
 {% endblock %} {% block script %}
-<script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
-<script>
-  // Setup EventSource
-  const source = new EventSource("{{ stream_server }}", {
-    withCredentials: true,
-  });
-  console.log("Connected to {{ stream_server }}");
-
-  source.onmessage = function (event) {
-    fetch(`/posts/new/${event.data}/`)
-      .then((response) => response.text())
-      .then((data) => {
-        existing = notifications.innerHTML;
-        notifications.innerHTML = data + existing;
-        x = document.getElementById("newMessage");
-        x.style.display = "block";
-        htmx.process(notifications);
-      });
-  };
-</script>
-
+<script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/sse.js"></script>
 {% endblock %}

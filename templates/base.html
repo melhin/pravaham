@@ -14,7 +14,6 @@
 
 
     <link rel="stylesheet" href="{% static "css/style.css" %}" >
-    <link rel="stylesheet" href="{% static "css/mastodon.css" %}" >
     <script src="{% static 'js/script.js' %}"></script>
   </head>
 
@@ -25,16 +24,14 @@
       {% if user.is_authenticated %}
         <li class="header-link"><a href="{% url 'posts:lobby' %}">User Posts</a></li>
         <li class="header-link"><a href="{% url 'posts:create' %}">Create Post</a></li>
-        <li class="header-link"><a href="{% url 'posts:content-htmx' %}">Mastadon Posts</a></li>
         <li class="logout">
           <form action="{% url 'accounts:logout' %}" method="post">
             {% csrf_token %}
-            <button type="submit" name="your_name" value="your_value" class="btn-link">Logout</type=>
+            <button type="submit" class="btn-link">Logout</type=>
           </form>
         </li>
       {% else %}
         <li class="header-link"><a href="{% url 'accounts:login' %}">Login</a></li>
-        <li class="header-link"><a href="{% url 'posts:content' %}">Mastadon Posts</a></li>
       {% endif %}
       </ul>
     </nav>
