@@ -1,8 +1,7 @@
-# Django Real-time Server-Sent Events (SSE) Demonstration
+# Django Server-Sent Events (SSE) Demonstration
 
-This project is a demonstration of Server-Sent Events (SSE) using Django without relying on third-party libraries. It includes two cases:
-* real-time updates for logged-in users and their posts
-* streaming the Mastodon firehose using Redis streams.
+This project is a demonstration of Server-Sent Events (SSE) using Django without relying on third-party libraries. 
+* An example shown here is of a real-time updates for logged-in users of posts where they have been mentioned
 
 ## Requirements
 
@@ -10,6 +9,10 @@ This project is a demonstration of Server-Sent Events (SSE) using Django without
 - Django (>=5.0)
 
 ## Quick Start
+
+**Before starting anything**
+
+*Have a **.env** file in the repo. Copy the env.example and then put in your secret key*
 
 In theory, you can run the following commands to start the project:
 
@@ -32,13 +35,9 @@ Ensure that you have Docker and Docker Compose installed on your machine.
   - [http://localhost:8000](http://localhost:8000)
   - The home page where you can log in or sign up.
 
-- **Mastodon Content:**
-  - [http://localhost:8000/posts/content/](http://localhost:8000/posts/content/)
+- **:A place where posts mentioning you as a user are present**
+  - [http://localhost:8000/posts/lobby/](http://localhost:8000/posts/lobby/)
   - No login required. Get the latest content from Mastodon.
-
-- **Real-time Content Stream (Load Test):**
-  - [http://localhost:8000/realtime/content/stream/](http://localhost:8000/realtime/content/stream/)
-  - For load testing purposes.
 
 ## Docker Compose Components
 
@@ -46,7 +45,7 @@ Ensure that you have Docker and Docker Compose installed on your machine.
    - Postgres and Redis for data storage and stream handling.
 
 2. **Synchronous Django App:**
-   - Provides all the functionalities for the user like posts and mastadon content
+   - Provides all the functionalities for the user like posts
 
 3. **Asynchronous Django App:**
    - Enhances real-time capabilities asynchronously.
@@ -54,53 +53,11 @@ Ensure that you have Docker and Docker Compose installed on your machine.
 4. **Nginx:**
    - Serves the application and routes the traffic
 
-5. **Feed Collector**
-   - Collect feeds from the streaming api from the mastodon server you choose
-
 ## Usage
 
-
-#### Before starting anything
-
-Have a **.env** file in the repo and then fill in the **mastodon server values** for streaming the feed
-
-### Case 1: Real-time updates for logged-in users and their posts
-
 1. Create a user account and log in.
-2. Navigate to the User Posts link to see what logged in user posts have been made.
-3. In another window or possibly as another user you 
-
-### Case 2: Streaming the Mastodon firehose for Non Logged in Users (Some JS)
-
-1. Navigate to the Mastodon firehose stream.
-  [http://localhost:8000/posts/content/](http://localhost:8000/posts/content/)
-2. Run the following command for getting the feed.
-   ```bash
-   make runfeed
-   ```
-3. Navigate back to the browser
-
-### Case 3: Streaming the Mastodon firehose for Logged in Users (htmx)
-
-1. Create a user account and log in.
-2. Navigate to the Mastodon firehose stream.
-  [http://localhost:8000/posts/content/htmx/](http://localhost:8000/posts/content/htmx/)
-2. Run the following command for getting the feed.
-   ```bash
-   make runfeed
-   ```
-3. Navigate back to the browser
-
-#### Load Testing
-
-1. Access the real-time content stream for load testing.
-   ```bash
-   http://localhost:8000/realtime/content/stream/
-   ```
-2. Run the following command for load testing.
-   ```bash
-   make runfeed
-   ```
+2. Navigate to the Posts link to see what posts you were mentioned on.
+3. In another window click on create post and write a post mentioning yourself or other users
 
 ## Conversion to Real-time
 

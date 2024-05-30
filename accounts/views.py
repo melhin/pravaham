@@ -1,10 +1,13 @@
-# Create your views here.
+import logging
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from accounts.forms import UserRegisterForm
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -24,6 +27,9 @@ def register(request):
                 "Your account has been created",
             )
             return redirect("posts:lobby")
+        else:
+            logger.warning("Failed registeration: %s", form.errors)
+
     else:
         form = UserRegisterForm()
     return render(request, "accounts/register.html", {"form": form})

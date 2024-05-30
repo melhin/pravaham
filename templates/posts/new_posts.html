@@ -1,9 +1,9 @@
 <div id="messages">
   {% for message in messages %}
   <div class="messageBox">
-    <div class="user">{{ message.creator__email }}</div>
-    <div class="message">
-       {{ message.text }}
+    <div class="message">{{ message.text }}</div>
+    <div class="user">
+       {{ message.creator }}
       <span class="time"> {{ message.created_at }} </span>
     </div>
   </div>
