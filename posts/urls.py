@@ -1,6 +1,6 @@
 from django.urls import path
 
-from posts.views import content, content_htmx, get_new_content, lobby, new_posts, post_create
+from posts.sync_views import content, content_htmx, get_new_content, lobby, new_posts, post_create
 
 app_name = "posts"
 

@@ -1,0 +1,4 @@
+POST_STREAM_PREFIX = "live-post-stream:"
+USER_STREAM = "user_stream"
+EXPIRY = 1200
+LISTEN_TIMEOUT = 150000
