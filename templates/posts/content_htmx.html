@@ -7,7 +7,7 @@
   <div hx-get="{% url 'posts:new-content' %}" hx-trigger="sse:new-notification" hx-swap="afterbegin">
   </div>
 </div>
-<h2>Posts</h2>
+<h2>Mastodon Posts</h2>
 
 <div id="messages">
   {% for message in messages %}

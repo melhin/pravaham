@@ -1,5 +1,5 @@
 from django.urls import include, path
 
 urlpatterns = [
-    path("realtime/", include("realtime.urls")),
+    path("posts/", include("posts.async_urls")),
 ]
