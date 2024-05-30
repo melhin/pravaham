@@ -67,12 +67,6 @@ def get_last_seen(
     return connection.get(str(uuid))
 
 
-def iso_to_epoch(iso_str):
-    """Convert ISO formatted string to Unix timestamp"""
-    dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
-    return dt.timestamp()
-
-
 def epoch_to_iso(epoch):
     """Convert Unix timestamp to ISO formatted string"""
     dt = datetime.fromtimestamp(float(epoch))

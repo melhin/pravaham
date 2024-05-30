@@ -1,13 +1,23 @@
+import json
 import logging
-from uuid import UUID
+from dataclasses import asdict
 
 import redis.asyncio as aredis
 from django.conf import settings
+from django.utils import timezone
 
+from accounts.models import User
 from commons.share import Singleton
-from posts.constants import EXPIRY, LISTEN_TIMEOUT, POST_STREAM_PREFIX, USER_STREAM
+from posts.constants import (
+    CONNECTION_STREAM,
+    LISTEN_TIMEOUT,
+    POST_STREAM_PREFIX,
+)
+from posts.data import DataToSend, EventType
 
 logger = logging.getLogger(__name__)
+
+
 class AsyncRedisConnectionFactory(metaclass=Singleton):
     """A singleton instance for redis connections"""
 
@@ -37,17 +47,24 @@ async def listen_on_multiple_streams(
         count=1,
         streams={
             user_key: last_id_returned,
-            USER_STREAM: last_id_returned,
+            CONNECTION_STREAM: last_id_returned,
         },
         block=timeout,
     )
 
 
-async def aset_last_seen(
-    uuid: UUID,
-    last_seen: str,
+async def send_status_to_stream(
+    user: User,
+    event_type: EventType,
     connection_factory=AsyncRedisConnectionFactory,
-    expire_in: int = EXPIRY,
 ):
-    connection = await connection_factory().get_connection()
-    await connection.set(str(uuid), str(last_seen), ex=expire_in)
+    data_to_send = DataToSend(
+        event_type=event_type.value,
+        text=f"{user.email} is {event_type.value}",
+        event_at=timezone.now().isoformat(),
+    )
+    aredis = await connection_factory().get_connection()
+    await aredis.xadd(
+        name=CONNECTION_STREAM, fields={"v": json.dumps(asdict(data_to_send))}
+    )
+    logger.info(f"Sent message to {CONNECTION_STREAM}: {data_to_send.text}")

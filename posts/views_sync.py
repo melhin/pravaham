@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_http_methods
 
 from posts.data import DataToSend, EventType
 from posts.external import (
@@ -43,6 +44,7 @@ def post_create(request):
 
 
 @login_required
+@require_http_methods(["GET"])
 def lobby(request: HttpRequest) -> HttpResponse:
     stream_server = urllib.parse.urljoin(
         settings.STREAM_SERVER, "/stream/content/notifications/"
@@ -56,6 +58,7 @@ def lobby(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+@require_http_methods(["GET"])
 def get_new_content(request: HttpRequest, *args, **kwargs):
     messages = get_new_posts_for_user(user=request.user)
     return render(

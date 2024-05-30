@@ -6,6 +6,7 @@
 <div hx-ext="sse" sse-connect="{{ stream_server }}">
   <div hx-get="{% url 'posts:new-content' %}" hx-trigger="sse:new-notification" hx-swap="afterbegin">
   </div>
+  <div sse-swap="status" hx-swap="afterbegin"></div>
 </div>
 
 <div id="messages">

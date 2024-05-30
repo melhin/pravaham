@@ -25,8 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = Value(environ_prefix=None, environ_name="SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = BooleanValue(environ_prefix=None, environ_name="DEBUG", default=False)
 
 ALLOWED_HOSTS = ["*"]
 # Authorization
