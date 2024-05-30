@@ -1,6 +1,6 @@
 from django.urls import path
 
-from posts.sync_views import get_new_content, lobby, post_create
+from posts.views_sync import get_new_content, lobby, post_create
 
 app_name = "posts"
 

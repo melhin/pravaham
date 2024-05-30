@@ -38,6 +38,8 @@ services:
     depends_on:
       - "redis"
       - "db"
+    env_file:
+      - .env
     environment:
       DB_HOST: db
       DB_NAME: pravaham
@@ -59,6 +61,8 @@ services:
       - "redis"
       - "db"
       - "asyncapp"
+    env_file:
+      - .env
     environment:
       DB_HOST: db
       DB_NAME: pravaham

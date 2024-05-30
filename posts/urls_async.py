@@ -1,6 +1,6 @@
 from django.urls import path
 
-from posts.async_views import (
+from posts.views_async import (
     stream_new_content_notification,
 )
 

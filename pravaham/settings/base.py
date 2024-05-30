@@ -23,8 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-xn@y=fdc9+kpk#w%f1krv4=_50*5no1%x=m%l+y)txn+o9c0p4"
+SECRET_KEY = Value(environ_prefix=None, environ_name="SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -191,8 +190,4 @@ LOGGING = {
 }
 LOGIN_REDIRECT_URL = "/posts/lobby"
 STREAM_SERVER = Value(environ_prefix=None, environ_name="STREAM_SERVER")
-MASTODON_BEARER_TOKEN = Value(environ_prefix=None, environ_name="MASTODON_BEARER_TOKEN")
-COMMON_STREAM = "common_stream"
-INSTANT_NOTIFICATION_CHANNEL = "instant_notification_channel"
-INSTANT_STREAM_CHANNEL = "instant_stream_channel"
 LOGIN_URL = "accounts:login"

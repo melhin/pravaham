@@ -44,7 +44,9 @@ def post_create(request):
 
 @login_required
 def lobby(request: HttpRequest) -> HttpResponse:
-    stream_server = urllib.parse.urljoin(settings.STREAM_SERVER, "/posts")
+    stream_server = urllib.parse.urljoin(
+        settings.STREAM_SERVER, "/stream/content/notifications/"
+    )
     messages = get_last_five_posts_for_user(user=request.user)
     return render(
         request,

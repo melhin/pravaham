@@ -7,6 +7,7 @@ from typing import Dict, List
 from uuid import UUID
 
 from django.conf import settings
+from django.utils import timezone
 from redis import ConnectionPool, Redis
 
 from accounts.models import User
@@ -125,6 +126,8 @@ def get_last_five_posts_for_user(user: User) -> Dict[str, str]:
         )
     set_last_seen(
         uuid=user.uuid,
-        last_seen=latest_post.astimezone(dt_timezone.utc).timestamp(),
+        last_seen=(latest_post if latest_post else timezone.now())
+        .astimezone(dt_timezone.utc)
+        .timestamp(),
     )
     return messages

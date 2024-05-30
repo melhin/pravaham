@@ -10,8 +10,8 @@ from django.http import HttpRequest, HttpResponseForbidden, StreamingHttpRespons
 from django.utils import timezone
 
 from accounts.models import User
-from posts.async_external import aset_last_seen, listen_on_multiple_streams
 from posts.constants import USER_STREAM
+from posts.external_async import aset_last_seen, listen_on_multiple_streams
 
 logger = logging.getLogger(__name__)
 
@@ -30,19 +30,16 @@ async def stream_new_content_notification(request: HttpRequest, *args, **kwargs)
     user = await get_user_from_request(request=request)
     if not await ais_authenticated(user=user):
         return HttpResponseForbidden()
+
     async def streamed_events(user: User) -> AsyncGenerator[str, None]:
         """Listen for events and generate an SSE message for each event"""
         connection_id = uuid.uuid4()
         events_count = 0
         last_id_returned = None
         logger.info(f"{user.email}: is now connected")
-        now_utc = timezone.now().astimezone(dt_timezone.utc)
-
-        # Calculate the epoch time
-        epoch_time = now_utc.timestamp()
         await aset_last_seen(
             uuid=request.user.uuid,
-            last_seen=epoch_time,
+            last_seen=timezone.now().astimezone(dt_timezone.utc).timestamp(),
         )
         while True:
             try:
@@ -72,7 +69,11 @@ async def stream_new_content_notification(request: HttpRequest, *args, **kwargs)
                     yield event
 
             except asyncio.CancelledError:
-                logging.info(f"{connection_id}: Disconnected after events. {events_count}")
+                logging.info(
+                    f"{connection_id}: Disconnected after events. {events_count}"
+                )
                 raise
 
-    return StreamingHttpResponse(streamed_events(user=user), content_type="text/event-stream")
+    return StreamingHttpResponse(
+        streamed_events(user=user), content_type="text/event-stream"
+    )
