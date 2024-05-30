@@ -56,7 +56,7 @@ Ensure that you have Docker and Docker Compose installed on your machine.
 ## Usage
 
 1. Create a user account and log in.
-2. Navigate to the Posts link to see what pots you were mentioned on.
+2. Navigate to the Posts link to see what posts you were mentioned on.
 3. In another window click on create post and write a post mentioning yourself or other users
 
 ## Conversion to Real-time
