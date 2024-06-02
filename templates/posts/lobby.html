@@ -2,7 +2,7 @@
 <h4 style="display: none" id="newMessage">New Mastodon Posts</h4>
 <div id="notifications"></div>
 
-<h2> Posts</h2>
+<h2> Posts for {{ user_email }}</h2>
 <div hx-ext="sse" sse-connect="{{ stream_server }}">
   <div hx-get="{% url 'posts:new-content' %}" hx-trigger="sse:new-notification" hx-swap="afterbegin">
   </div>

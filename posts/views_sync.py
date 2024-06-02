@@ -40,7 +40,13 @@ def post_create(request):
             )
         return redirect(reverse("posts:create"))
     else:
-        return render(request, "posts/create.html")
+        return render(
+            request,
+            "posts/create.html",
+            context={
+                "user_email": request.user.email,
+            },
+        )
 
 
 @login_required
@@ -53,7 +59,11 @@ def lobby(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "posts/lobby.html",
-        context={"messages": messages, "stream_server": stream_server},
+        context={
+            "messages": messages,
+            "stream_server": stream_server,
+            "user_email": request.user.email,
+        },
     )
 
 

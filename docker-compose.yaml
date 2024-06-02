@@ -4,15 +4,6 @@ volumes:
   pravham_pg_data: {}
 
 services:
-  revproxy:
-    container_name: revproxy
-    build: nginx_revproxy
-    depends_on:
-      - webapp
-      - asyncapp
-    restart: always
-    ports:
-      - 8000:80
   db:
     image: postgres:13
     restart: on-failure
@@ -31,28 +22,6 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - "6379:6379"
-  asyncapp:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - "redis"
-      - "db"
-    env_file:
-      - .env
-    environment:
-      DB_HOST: db
-      DB_NAME: pravaham
-      DB_USER: postgres
-      DB_PASS: postgres
-      REDIS_DSN: redis://redis:6379/1
-      DJANGO_SETTINGS_MODULE: pravaham.settings.async_base
-      GUNICORN_WORKERS: 4
-    command:
-      - async
-
-    ports:
-      - "8002:8002"
   webapp:
     build:
       context: .
@@ -60,7 +29,6 @@ services:
     depends_on:
       - "redis"
       - "db"
-      - "asyncapp"
     env_file:
       - .env
     environment:
@@ -74,3 +42,34 @@ services:
 
     ports:
       - "8001:8001"
+  asyncapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - "redis"
+      - "db"
+      - "webapp"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_NAME: pravaham
+      DB_USER: postgres
+      DB_PASS: postgres
+      REDIS_DSN: redis://redis:6379/1
+      DJANGO_SETTINGS_MODULE: pravaham.settings.async_base
+      GUNICORN_WORKERS: 4
+    command:
+      - async
+    ports:
+      - "8002:8002"
+  revproxy:
+    container_name: revproxy
+    build: nginx_revproxy
+    depends_on:
+      - webapp
+      - asyncapp
+    restart: always
+    ports:
+      - 8000:80

@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% block base %}
+
+<h2> Create post for {{ user_email }}</h2>
 <form method='post' action='{% url "posts:create" %}'>
         {% csrf_token %}
         <input name='text' id='text' placeholder='Your Text here'>

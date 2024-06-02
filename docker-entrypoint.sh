@@ -12,7 +12,7 @@ do
             ;;
         async)
             echo "Starting async server"
-            exec gunicorn pravaham.asgi:application -c uvicorn.conf.py --worker-class uvicorn.workers.UvicornWorker 
+            exec uvicorn pravaham.asgi:application --host 0.0.0.0 --port 8002  --workers 2 --timeout-graceful-shutdown 0
             ;;
         async-local)
             echo "Starting async server"
