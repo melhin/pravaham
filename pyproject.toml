@@ -18,6 +18,7 @@ django-cors-headers = "^4.3.0"
 httpx = "^0.25.1"
 httpx-sse = "^0.3.1"
 gunicorn = "^22.0.0"
+whitenoise = "^6.9.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
