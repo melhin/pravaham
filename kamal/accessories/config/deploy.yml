@@ -1,0 +1,56 @@
+# Name of your application. Used to uniquely configure containers.
+service: shared
+
+# Name of the container image.
+image: nihlem/pravaham
+
+# Deploy to these servers.
+servers:
+  web:
+    - <%= ENV['FIRST_SERVER_IP'] %>
+  redis:
+    - <%= ENV['FIRST_SERVER_IP'] %>
+  db:
+    - <%= ENV['FIRST_SERVER_IP'] %>
+
+ssh:
+  keys_only: true
+  keys: [ "~/.ssh/server_access" ]
+
+
+
+## Credentials for your image host.
+registry:
+#  # Specify the registry server, if you're not using Docker Hub
+  username: 
+    - DOCKER_REGISTRY_LOGIN
+  password:
+    - DOCKER_REGISTRY_TOKEN
+
+## Configure builder setup.
+builder:
+  arch: amd64
+
+accessories:
+   db:
+     service: db
+     image: postgres:13
+     roles:
+      - redis
+     port: 5432
+     directories:
+      - pravham_pg_data:/var/lib/postgresql/data
+     env:
+      clear:
+        POSTGRES_DB: pravaham
+      secret:
+        - POSTGRES_PASSWORD
+        - POSTGRES_USER
+   redis:
+     service: redis
+     image: valkey/valkey:8
+     roles:
+      - redis
+     port: 6379
+     directories:
+       - data:/data

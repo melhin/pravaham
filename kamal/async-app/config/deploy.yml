@@ -1,0 +1,65 @@
+# Name of your application. Used to uniquely configure containers.
+service: async
+
+# Name of the container image.
+image: nihlem/pravaham
+
+# Deploy to these servers.
+servers:
+  web:
+    hosts:
+      - <%= ENV['FIRST_SERVER_IP'] %>
+    cmd: async
+
+# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
+# Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
+#
+# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+proxy:
+  ssl: true
+  host: async.044890.xyz
+  app_port: 8002
+  healthcheck:
+    interval: 3
+    path: /health/
+    timeout: 3
+
+
+## Credentials for your image host.
+registry:
+#  # Specify the registry server, if you're not using Docker Hub
+  username: 
+    - DOCKER_REGISTRY_LOGIN
+  password:
+    - DOCKER_REGISTRY_TOKEN
+
+## Configure builder setup.
+builder:
+  arch: amd64
+  args:
+    PORT: 8002
+
+env:
+  clear:
+    REDIS_DSN: redis://redis:6379/1
+    DB_HOST: db
+    DB_NAME: pravaham
+    DJANGO_SETTINGS_MODULE: pravaham.settings.async_base
+    CSRF_COOKIE_DOMAIN: ".044890.xyz"
+    SESSION_COOKIE_DOMAIN: ".044890.xyz"
+    CSRF_TRUSTED_ORIGINS: "https://app.044890.xyz,https://async.044890.xyz"
+  secret:
+    - SECRET_KEY
+    - DB_PASS
+    - DB_USER
+  
+
+# Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
+# "bin/kamal app logs -r job" will tail logs from the first server in the job section.
+#
+# aliases:
+#   shell: app exec --interactive --reuse "bash"
+
+ssh:
+  keys_only: true
+  keys: [ "~/.ssh/server_access" ]
