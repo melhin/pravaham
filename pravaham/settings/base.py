@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
-from configurations.values import BooleanValue, PositiveIntegerValue, Value
+from configurations.values import BooleanValue, PositiveIntegerValue, Value, ListValue
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -145,7 +146,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR + "/static",
 ]
-STATIC_ROOT = BASE_DIR + "/staticfiles"
+STATIC_ROOT = BASE_DIR + "/staticfiles/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -190,3 +191,6 @@ LOGGING = {
 LOGIN_REDIRECT_URL = "/posts/lobby"
 STREAM_SERVER = Value(environ_prefix=None, environ_name="STREAM_SERVER")
 LOGIN_URL = "accounts:login"
+CSRF_COOKIE_DOMAIN = Value(environ_prefix=None, environ_name="CSRF_COOKIE_DOMAIN")
+SESSION_COOKIE_DOMAIN = Value(environ_prefix=None, environ_name="SESSION_COOKIE_DOMAIN")
+CSRF_TRUSTED_ORIGINS = ListValue(environ_prefix=None, environ_name="CSRF_TRUSTED_ORIGINS")

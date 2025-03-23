@@ -63,7 +63,7 @@ services:
     command:
       - async
     ports:
-      - "8002:8002"
+      - "8002:8001"
   revproxy:
     container_name: revproxy
     build: nginx_revproxy
