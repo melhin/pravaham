@@ -47,7 +47,7 @@ env:
     DJANGO_SETTINGS_MODULE: pravaham.settings.async_base
     CSRF_COOKIE_DOMAIN: ".044890.xyz"
     SESSION_COOKIE_DOMAIN: ".044890.xyz"
-    CSRF_TRUSTED_ORIGINS: "https://app.044890.xyz,https://async.044890.xyz"
+    CSRF_TRUSTED_ORIGINS: "https://awesome.044890.xyz,https://async.044890.xyz"
   secret:
     - SECRET_KEY
     - DB_PASS
@@ -62,4 +62,4 @@ env:
 
 ssh:
   keys_only: true
-  keys: [ "~/.ssh/server_access" ]
+  keys: [ "~/.ssh/no_pw_server_access" ]

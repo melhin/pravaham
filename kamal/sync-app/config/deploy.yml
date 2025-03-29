@@ -53,4 +53,4 @@ env:
 
 ssh:
   keys_only: true
-  keys: [ "~/.ssh/server_access" ]
+  keys: [ "~/.ssh/no_pw_server_access" ]

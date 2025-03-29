@@ -34,8 +34,8 @@
 
 
 * Run in this order kamal
-    - kamal server bootstrap  -c kamal/accessories/config/deploy.yml
     -  export $(cat .env | xargs) [To get values to in env to log in to docker deployment]
+    - kamal server bootstrap  -c kamal/accessories/config/deploy.yml
     - kamal accessory boot redis  -c kamal/accessories/config/deploy.yml
     - kamal accessory boot db  -c kamal/accessories/config/deploy.yml
     - kamal deploy -r web  -c kamal/sync-app/config/deploy.yml
