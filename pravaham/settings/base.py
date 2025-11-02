@@ -81,7 +81,7 @@ WSGI_APPLICATION = "pravaham.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DB_HOST = Value(environ_prefix=None, environ_name="DB_HOST", default="db")
-DB_NAME = Value(environ_prefix=None, environ_name="DB_NAME", default="chemondis")
+DB_NAME = Value(environ_prefix=None, environ_name="DB_NAME", default="pravaham")
 DB_SCHEMA = Value(environ_prefix=None, environ_name="DB_SCHEMA", default="public")
 DB_USER = Value(environ_prefix=None, environ_name="DB_USER", default="postgres")
 DB_PASS = Value(environ_prefix=None, environ_name="DB_PASS", default="postgres")
